@@ -1,0 +1,72 @@
+.player {
+    display: block;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 720px;
+}
+
+.controlContainer {
+    background-color: #1b1c1d;
+    margin-top: 1px;
+    width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ppContainer {
+    /* display: block; */
+    width: 20%;
+}
+
+.playBtn {
+    -webkit-appearance: none;
+    background-color: #1b1c1d;
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+    border-color: #e5e6e5;
+    border-top: none;
+    border-left: none;
+    border-bottom: none;
+    border-width: 1px;
+}
+
+.playBtn:hover {
+    opacity: 1;
+}
+
+.pauseBtn {
+    -webkit-appearance: none;
+    background-color: #1b1c1d;
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+    border-color: #e5e6e5;
+    border-top: none;
+    border-left: none;
+    border-bottom: none;
+    border-width: 1px;
+}
+
+.pauseBtn:hover {
+    opacity: 1;
+}
+
+.volumeBtn {
+    -webkit-appearance: none;
+    background-color: #1b1c1d;
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s; 
+    border-color: #A4A5A4;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    border-width: 1px;
+    float: right;
+}
+
+.volumeBtn:hover {
+    opacity: 1;
+}
