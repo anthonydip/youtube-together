@@ -1,18 +1,14 @@
 import './App.css';
 import styles from './Styles.module.css';
 import YouTube from 'react-youtube';
-import { Button } from 'react-bootstrap';
-import PlayArrow from '@material-ui/icons/PlayArrow';
-import Pause from '@material-ui/icons/Pause';
-import Slider from '@material-ui/core/Slider';
-import Fullscreen from '@material-ui/icons/Fullscreen';
-import VolumeDown from '@material-ui/icons/VolumeDown';
 import { useState } from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
 
-// github auth token
-// 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
+// components
+import SearchForm from './components/SearchForm';
+import ProgressionBar from './components/ProgressionBar';
+import PlayButton from './components/PlayButton';
+import PauseButton from './components/PauseButton';
+import VolumeButton from './components/VolumeButton';
 
 // NOTE: TRY GET PLAY PAUSE BUTTON TO SWITCH ON CLICK
 
@@ -33,55 +29,7 @@ var videoEvent = null;
 
 var timer;
 
-const CssTextField = withStyles({
-  root: {
-    '& label.Mui-focused': {
-      color: 'green',
-    },
-    '& .MuiInput-underline:after': {
-      borderBottomColor: 'green',
-    },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: 'red',
-      },
-      '&:hover fieldset': {
-        borderColor: 'yellow',
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: 'green',
-      },
-    },
-  },
-})(TextField);
-
-const useTextFieldStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
-  input: {
-    color: 'white',
-  },
-  inputLabel: {
-    color: 'white',
-  },
-  margin: {
-    margin: theme.spacing(1),
-  },
-}));
-
-const useStyles = makeStyles({
-  root: {
-    width: 720,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  },
-});
-
 const App = () => {
-  const classes = useStyles();
-  const textFieldClasses = useTextFieldStyles();
   const [playing, setPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   const [videoUrl, setVideoUrl] = useState('');
@@ -112,31 +60,6 @@ const App = () => {
       // console.log("timer: " + timer + ",fraction: " + fraction);
       setTimeLeft(fraction);
     }, 200);
-  }
-
-  const handlePlay = () => {
-    if(videoEvent === null){
-      // do something
-    }
-    else{
-      videoEvent.target.playVideo();
-      if(!timer){
-        durationLoop();
-      }
-      setPlaying(true);
-    }
-  }
-
-  const handlePause = () => {
-    if(videoEvent === null){
-      // do something
-    }
-    else{
-      videoEvent.target.pauseVideo();
-      clearInterval(timer);
-      timer = null;
-      setPlaying(false);
-    }
   }
 
   const handleStateChange = event => {
@@ -182,98 +105,21 @@ const App = () => {
     event.target.pauseVideo();
   }
 
-  const handleProgressChange = (event, newValue) => {
-    if(videoEvent === null){
-      return;
-    }
-
-    if(!timer){
-      durationLoop();
-    }
-
-    // move slider thumb
-    setTimeLeft(newValue);
-
-    // calculated new time in the video from new slider value
-    var timeInVideo = newValue*videoEvent.target.getDuration()/100;
-
-    // move actual video to new slider point
-    videoEvent.target.seekTo(timeInVideo);
-    
-    // console.log("timer: " + timer + ", move: " + timeInVideo);
-  };
-
-  // textfield change
-  const handleVideoChange = event => {
-    setVideoUrl(event.target.value);
-  };
-
-  // submit video
-  const handleVideoSubmit = event => {
-    var code = videoUrl.split("v=")[1].split("&")[0];
-    setVideoCode(code);
-    event.preventDefault();
-  };
-
-  // toggle mute
-  const handleVolumeClick = () => {
-    // unmute
-    if(videoEvent.target.isMuted()){
-      console.log("unmuted");
-      videoEvent.target.unMute();
-    }
-    // mute
-    else{
-      console.log("muted");
-      videoEvent.target.mute();
-    }
-  }
-
   return (
     <div>
-      <form onSubmit={handleVideoSubmit} className={textFieldClasses.root} noValidate>
-        <CssTextField
-          className={textFieldClasses.margin}
-          label="Video URL"
-          variant="outlined"
-          id="custom-css-outlined-input"
-          onChange={handleVideoChange}
-          InputProps={{
-            className: textFieldClasses.input,
-          }}
-          InputLabelProps={{
-            className: textFieldClasses.inputLabel,
-          }}
-          style={{
-            width: 720,
-            marginTop: 50,
-            marginLeft: 'auto',
-            marginRight: 'auto',
-          }}
-        />
-      </form>
+      <SearchForm videoUrl={videoUrl} setVideoUrl={setVideoUrl} setVideoCode={setVideoCode}/>
 
       <div className={styles.player}>
         <YouTube aria-labelledby="continuous-slider" videoId={videoCode} opts={opts} onReady={handleVideoReady} onStateChange={handleStateChange}/>
       </div>
 
       {/* duration slider */}
-      <div className={classes.root} >
-        <Slider value={timeLeft || 0} step={0.01} min={0} max={100} color="secondary" onChange={handleProgressChange}/>
-      </div>
+      <ProgressionBar timer={timer} videoEvent={videoEvent} timeLeft={timeLeft} setTimeLeft={setTimeLeft} durationLoop={durationLoop}/>
       
       <div className={styles.controlContainer}>
-          <Button className={styles.playBtn} onClick={handlePlay}>
-            <PlayArrow color="secondary"/>
-          </Button>
-          <Button className={styles.pauseBtn} onClick={handlePause}>
-            <Pause color="secondary"/>
-          </Button>
-          <Button className={styles.volumeBtn} onClick={handleVolumeClick}>
-            <VolumeDown color="secondary"/>
-          </Button>
-        
-          
+          <PlayButton videoEvent={videoEvent} timer={timer} durationLoop={durationLoop} setPlaying={setPlaying}/>
+          <PauseButton videoEvent={videoEvent} timer={timer} setPlaying={setPlaying}/>
+          <VolumeButton videoEvent={videoEvent}/>
       </div>
 
     </div>

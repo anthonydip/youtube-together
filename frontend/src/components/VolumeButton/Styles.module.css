@@ -1,0 +1,17 @@
+.volumeBtn {
+    -webkit-appearance: none;
+    background-color: #1b1c1d;
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s; 
+    border-color: #A4A5A4;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    border-width: 1px;
+    float: right;
+}
+
+.volumeBtn:hover {
+    opacity: 1;
+}
