@@ -2,7 +2,8 @@ import Styles from './Styles.module.css';
 import { Button } from 'react-bootstrap';
 import VolumeDown from '@material-ui/icons/VolumeDown';
 
-const VolumeButton = ({videoEvent}) => {
+const VolumeButton = ({videoEvent, setHovering}) => {
+
     const handleVolumeClick = () => {
         // unmute
         if(videoEvent.target.isMuted()){
@@ -14,8 +15,16 @@ const VolumeButton = ({videoEvent}) => {
         }
     }
 
+    const handleHover = () => {
+      setHovering(true);
+    };
+
+    const handleLeave = () => {
+      setHovering(false);
+    }
+
     return(
-        <Button className={Styles.volumeBtn} onClick={handleVolumeClick}>
+        <Button className={Styles.volumeBtn} onClick={handleVolumeClick} onMouseEnter={handleHover} onMouseLeave={handleLeave}>
             <VolumeDown color="secondary"/>
         </Button>
     );

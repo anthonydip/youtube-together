@@ -9,6 +9,7 @@ import ProgressionBar from './components/ProgressionBar';
 import PlayButton from './components/PlayButton';
 import PauseButton from './components/PauseButton';
 import VolumeButton from './components/VolumeButton';
+import VolumeBar from './components/VolumeBar';
 
 // NOTE: TRY GET PLAY PAUSE BUTTON TO SWITCH ON CLICK
 
@@ -34,6 +35,7 @@ const App = () => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [videoUrl, setVideoUrl] = useState('');
   const [videoCode, setVideoCode] = useState('');
+  const [hovering, setHovering] = useState(false);
 
   // YouTube video player options
   const opts = {
@@ -119,8 +121,11 @@ const App = () => {
       <div className={styles.controlContainer}>
           <PlayButton videoEvent={videoEvent} timer={timer} durationLoop={durationLoop} setPlaying={setPlaying}/>
           <PauseButton videoEvent={videoEvent} timer={timer} setPlaying={setPlaying}/>
-          <VolumeButton videoEvent={videoEvent}/>
+          {hovering && <VolumeBar/>}
+          <VolumeButton videoEvent={videoEvent} setHovering={setHovering}/>
       </div>
+
+      {/* <VolumeBar/> */}
 
     </div>
   );
