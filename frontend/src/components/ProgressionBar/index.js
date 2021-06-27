@@ -29,8 +29,7 @@ const ProgressionBar = ({timer, videoEvent, timeLeft, setTimeLeft, durationLoop}
     
         // move actual video to new slider point
         videoEvent.target.seekTo(timeInVideo);
-        
-        // console.log("timer: " + timer + ", move: " + timeInVideo);
+        console.log("here");
     };
 
     return(

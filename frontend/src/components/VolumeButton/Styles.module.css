@@ -10,6 +10,7 @@
     border-bottom: none;
     border-width: 1px;
     float: right;
+    margin-right: 10px;
 }
 
 .volumeBtn:hover {

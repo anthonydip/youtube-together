@@ -9,6 +9,7 @@
     border-left: none;
     border-bottom: none;
     border-width: 1px;
+    float: left;
 }
 
 .playBtn:hover {

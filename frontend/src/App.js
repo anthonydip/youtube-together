@@ -1,7 +1,7 @@
 import './App.css';
-import styles from './Styles.module.css';
+import Styles from './Styles.module.css';
 import YouTube from 'react-youtube';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // components
 import SearchForm from './components/SearchForm';
@@ -14,28 +14,36 @@ import VolumeBar from './components/VolumeBar';
 // NOTE: TRY GET PLAY PAUSE BUTTON TO SWITCH ON CLICK
 
 // WORKING ON:
-// show video duration
-// add volume + mute button
-
-// add light/dark mode
-// add database for login
-// implement login for usernames
-// add chat box on the right of video
 // implement server for multiple users to interact and watch together
 //    - state changes on the video
 //           - when a user changes a state using the interface, a signal will be sent to the server (e.g pause), and the server will send the signal to all connected users
+
+// TO-DO:
+// add database for login
+//    - implement login for usernames
+// add chat box on the right of video
+// add light/dark mode
 
 // Global variable to hold the event prop passed from the YouTube component when video is ready
 var videoEvent = null;
 
 var timer;
 
+
 const App = () => {
   const [playing, setPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   const [videoUrl, setVideoUrl] = useState('');
   const [videoCode, setVideoCode] = useState('');
-  const [hovering, setHovering] = useState(false);
+  const [volume, setVolume] = useState(50);
+  const [volumeLabel, setVolumeLabel] = useState('50');
+  const [duration, setDuration] = useState('0:00 / 0:00');
+
+  useEffect(() => {
+    if(videoEvent){
+      setVolumeLabel(volume.toString());
+    }
+  }, [volume]);
 
   // YouTube video player options
   const opts = {
@@ -57,9 +65,18 @@ const App = () => {
       if(!videoEvent){
         return;
       }
-      // console.log("current: " + videoEvent.target.getCurrentTime() + ", duration: " + videoEvent.target.getDuration());
       var fraction = videoEvent.target.getCurrentTime()/videoEvent.target.getDuration()*100;
-      // console.log("timer: " + timer + ",fraction: " + fraction);
+
+      // calculate for duration display
+      var curMinutes = Math.floor(videoEvent.target.getCurrentTime() / 60);
+      var curSeconds = Math.floor(videoEvent.target.getCurrentTime() - curMinutes * 60);
+      var durMinutes = Math.floor(videoEvent.target.getDuration() / 60);
+      var durSeconds = Math.floor(videoEvent.target.getDuration() - durMinutes * 60);
+
+      curSeconds = curSeconds.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping: false});
+      durSeconds = durSeconds.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping: false});
+
+      setDuration(curMinutes + ":" + curSeconds + " / " + durMinutes + ":" + durSeconds)
       setTimeLeft(fraction);
     }, 200);
   }
@@ -102,7 +119,6 @@ const App = () => {
   }
 
   const handleVideoReady = event => {
-    // console.log("VIDEO DURATION: " + event.target.getDuration());
     videoEvent = event;
     event.target.pauseVideo();
   }
@@ -111,21 +127,22 @@ const App = () => {
     <div>
       <SearchForm videoUrl={videoUrl} setVideoUrl={setVideoUrl} setVideoCode={setVideoCode}/>
 
-      <div className={styles.player}>
+      <div className={Styles.player}>
         <YouTube aria-labelledby="continuous-slider" videoId={videoCode} opts={opts} onReady={handleVideoReady} onStateChange={handleStateChange}/>
       </div>
 
       {/* duration slider */}
-      <ProgressionBar timer={timer} videoEvent={videoEvent} timeLeft={timeLeft} setTimeLeft={setTimeLeft} durationLoop={durationLoop}/>
-      
-      <div className={styles.controlContainer}>
+      <ProgressionBar timer={timer} videoEvent={videoEvent} timeLeft={timeLeft} setTimeLeft={setTimeLeft} durationLoop={durationLoop}/>      
+
+      <div className={Styles.controlContainer}>
           <PlayButton videoEvent={videoEvent} timer={timer} durationLoop={durationLoop} setPlaying={setPlaying}/>
           <PauseButton videoEvent={videoEvent} timer={timer} setPlaying={setPlaying}/>
-          {hovering && <VolumeBar/>}
-          <VolumeButton videoEvent={videoEvent} setHovering={setHovering}/>
+          <span className={Styles.durationLabel}>{duration}</span>
+          <p className={Styles.volumeLabel}>{volumeLabel}</p>
+          <VolumeBar videoEvent={videoEvent} volume={volume} setVolume={setVolume}/>
+          <VolumeButton videoEvent={videoEvent} setVolumeLabel={setVolumeLabel}/>
+          
       </div>
-
-      {/* <VolumeBar/> */}
 
     </div>
   );
