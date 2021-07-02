@@ -11,6 +11,11 @@ import PauseButton from './components/PauseButton';
 import VolumeButton from './components/VolumeButton';
 import VolumeBar from './components/VolumeBar';
 
+// socket io client
+import { io } from "socket.io-client";
+// change endpoint after pushing to heroku
+const ENDPOINT = "http://192.168.1.44:5000";
+
 // NOTE: TRY GET PLAY PAUSE BUTTON TO SWITCH ON CLICK
 
 // WORKING ON:
@@ -27,8 +32,8 @@ import VolumeBar from './components/VolumeBar';
 // Global variable to hold the event prop passed from the YouTube component when video is ready
 var videoEvent = null;
 
+// Timer variable to update progress bar on set interval
 var timer;
-
 
 const App = () => {
   const [playing, setPlaying] = useState(false);
@@ -39,6 +44,12 @@ const App = () => {
   const [volumeLabel, setVolumeLabel] = useState('50');
   const [duration, setDuration] = useState('0:00 / 0:00');
 
+  // socket io connection
+  useEffect(() => {
+    const socket = io(ENDPOINT, { transports : ['websocket'] });
+  }, []);
+
+  // update volume label on volume change
   useEffect(() => {
     if(videoEvent){
       setVolumeLabel(volume.toString());
