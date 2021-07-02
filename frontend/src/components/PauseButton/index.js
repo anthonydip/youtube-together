@@ -2,7 +2,7 @@ import Styles from './Styles.module.css';
 import Pause from '@material-ui/icons/Pause';
 import { Button } from 'react-bootstrap';
 
-const PauseButton = ({videoEvent, timer, setPlaying}) => {
+const PauseButton = ({socket, videoEvent, timer, setPlaying}) => {
 
     const handlePause = () => {
         if(videoEvent === null){
@@ -12,8 +12,9 @@ const PauseButton = ({videoEvent, timer, setPlaying}) => {
           videoEvent.target.pauseVideo();
           clearInterval(timer);
           timer = null;
-        //   console.log("timer after pause: " + timer);
           setPlaying(false);
+
+          socket.emit("pause", "Pressed pause");
         }
     }
 

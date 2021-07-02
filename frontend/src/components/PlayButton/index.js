@@ -2,7 +2,7 @@ import PlayArrow from '@material-ui/icons/PlayArrow';
 import { Button } from 'react-bootstrap';
 import Styles from './Styles.module.css';
 
-const PlayButton = ({videoEvent, timer, durationLoop, setPlaying}) => {
+const PlayButton = ({socket, videoEvent, durationLoop, setPlaying}) => {
 
     const handlePlay = () => {
         if(videoEvent === null){
@@ -12,6 +12,8 @@ const PlayButton = ({videoEvent, timer, durationLoop, setPlaying}) => {
           videoEvent.target.playVideo();
           durationLoop();
           setPlaying(true);
+
+          socket.emit("play", "Pressed play");
         }
     }
 

@@ -39,7 +39,7 @@ const useTextFieldStyles = makeStyles((theme) => ({
     },
 }));
 
-const SearchForm = ({videoUrl, setVideoUrl, setVideoCode}) => {
+const SearchForm = ({socket, videoUrl, setVideoUrl, setVideoCode}) => {
     const textFieldClasses = useTextFieldStyles();
 
     const handleVideoChange = event => {
@@ -49,6 +49,10 @@ const SearchForm = ({videoUrl, setVideoUrl, setVideoCode}) => {
     const handleVideoSubmit = event => {
         var code = videoUrl.split("v=")[1].split("&")[0];
         setVideoCode(code);
+
+        // send video code to server
+        socket.emit("submit", code);
+
         event.preventDefault();
     };
 

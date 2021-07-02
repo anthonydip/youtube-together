@@ -9,7 +9,7 @@ const useStyles = makeStyles({
     },
 });
 
-const ProgressionBar = ({timer, videoEvent, timeLeft, setTimeLeft, durationLoop}) => {
+const ProgressionBar = ({socket, timer, videoEvent, timeLeft, setTimeLeft, durationLoop}) => {
     const classes = useStyles();
 
     const handleProgressChange = (event, newValue) => {
@@ -29,7 +29,8 @@ const ProgressionBar = ({timer, videoEvent, timeLeft, setTimeLeft, durationLoop}
     
         // move actual video to new slider point
         videoEvent.target.seekTo(timeInVideo);
-        console.log("here");
+        
+        socket.emit("skip", newValue, timeInVideo);
     };
 
     return(

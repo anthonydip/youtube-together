@@ -20,8 +20,8 @@ const ENDPOINT = "http://192.168.1.44:5000";
 
 // WORKING ON:
 // implement server for multiple users to interact and watch together
-//    - state changes on the video
-//           - when a user changes a state using the interface, a signal will be sent to the server (e.g pause), and the server will send the signal to all connected users
+//    - load the same video for connected sockets
+//    - 
 
 // TO-DO:
 // add database for login
@@ -35,6 +35,9 @@ var videoEvent = null;
 // Timer variable to update progress bar on set interval
 var timer;
 
+// set up socket io connection
+const socket = io(ENDPOINT, { transports : ['websocket'] });
+
 const App = () => {
   const [playing, setPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
@@ -43,11 +46,6 @@ const App = () => {
   const [volume, setVolume] = useState(50);
   const [volumeLabel, setVolumeLabel] = useState('50');
   const [duration, setDuration] = useState('0:00 / 0:00');
-
-  // socket io connection
-  useEffect(() => {
-    const socket = io(ENDPOINT, { transports : ['websocket'] });
-  }, []);
 
   // update volume label on volume change
   useEffect(() => {
@@ -134,20 +132,62 @@ const App = () => {
     event.target.pauseVideo();
   }
 
+  // received new video to load
+  socket.on("submit", (code) => {
+    console.log("NEW VIDEO: " + code);
+    setVideoCode(code);
+  });
+
+  // received play event
+  socket.on("play", () => {
+    if(videoEvent){
+      videoEvent.target.playVideo();
+      durationLoop();
+      setPlaying(true);
+    }
+  });
+
+  // received pause event
+  socket.on("pause", () => {
+    if(videoEvent){
+      videoEvent.target.pauseVideo();
+      clearInterval(timer);
+      timer = null;
+      setPlaying(false);
+    }
+  });
+
+  // received skip event
+  socket.on("skip", (newValue, timeInVideo) => {
+    if(videoEvent === null){
+      return;
+    }
+
+    if(!timer){
+      durationLoop();
+    }
+
+    // move slider thumb
+    setTimeLeft(newValue);
+
+    // move actual video to new slider point
+    videoEvent.target.seekTo(timeInVideo);
+  });
+
   return (
     <div>
-      <SearchForm videoUrl={videoUrl} setVideoUrl={setVideoUrl} setVideoCode={setVideoCode}/>
+      <SearchForm socket={socket} videoUrl={videoUrl} setVideoUrl={setVideoUrl} setVideoCode={setVideoCode}/>
 
       <div className={Styles.player}>
         <YouTube aria-labelledby="continuous-slider" videoId={videoCode} opts={opts} onReady={handleVideoReady} onStateChange={handleStateChange}/>
       </div>
 
       {/* duration slider */}
-      <ProgressionBar timer={timer} videoEvent={videoEvent} timeLeft={timeLeft} setTimeLeft={setTimeLeft} durationLoop={durationLoop}/>      
+      <ProgressionBar socket={socket} timer={timer} videoEvent={videoEvent} timeLeft={timeLeft} setTimeLeft={setTimeLeft} durationLoop={durationLoop}/>      
 
       <div className={Styles.controlContainer}>
-          <PlayButton videoEvent={videoEvent} timer={timer} durationLoop={durationLoop} setPlaying={setPlaying}/>
-          <PauseButton videoEvent={videoEvent} timer={timer} setPlaying={setPlaying}/>
+          <PlayButton socket={socket} videoEvent={videoEvent} timer={timer} durationLoop={durationLoop} setPlaying={setPlaying}/>
+          <PauseButton socket={socket} videoEvent={videoEvent} timer={timer} setPlaying={setPlaying}/>
           <span className={Styles.durationLabel}>{duration}</span>
           <p className={Styles.volumeLabel}>{volumeLabel}</p>
           <VolumeBar videoEvent={videoEvent} volume={volume} setVolume={setVolume}/>
