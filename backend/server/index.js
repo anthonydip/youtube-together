@@ -1,4 +1,4 @@
-const { time } = require('console');
+require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const { Server } = require("socket.io");
@@ -9,8 +9,19 @@ const index = require("./routes/index");
 const app = express();
 app.use(index);
 
+// Socket IO connection
 const server = http.createServer(app);
 const io = new Server(server);
+
+// MongoDB connection
+const mongoose = require('mongoose');
+mongoose.connect(process.env.DB_URL, {useNewUrlParser: true, useUnifiedTopology: true});
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log("Successfully connected to database!");
+});
 
 // on socket connection
 io.on("connection", (socket) => {

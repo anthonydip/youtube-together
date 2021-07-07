@@ -1,0 +1,40 @@
+.signInLabel {
+    color: white;
+    font-family: "Martel Sans", sans-serif;
+    font-size: 34px;
+    text-align: center;
+}
+
+.emailForm {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.signInBtn {
+    left: 50%;
+}
+
+.separator {
+    display: flex;
+    margin-top: 20px;
+    align-items: center;
+    text-align: center;
+    color: white;
+}
+  
+.separator::before,
+.separator::after {
+    margin-left: auto;
+    margin-right: auto;
+    content: '';
+    width: 100px;
+    border-bottom: 1px solid rgb(255, 255, 255);
+}
+
+.separator:not(:empty)::before {
+    margin-right: .25em;
+}
+
+.separator:not(:empty)::after {
+    margin-left: .25em;
+}

@@ -16,7 +16,7 @@ const LoginButton = () => {
 
     return(
         <div className={classes.root}>
-            <Button variant="outlined" color="secondary">Login</Button>
+            <Button variant="outlined" color="secondary">Account</Button>
         </div>
     );
 };

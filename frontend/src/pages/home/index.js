@@ -178,7 +178,7 @@ const Home = () => {
   return (
     <div>
       <div className={Styles.loginBtn}>
-        <Link to="/login">
+        <Link to="/login" style={{ textDecoration: 'none'}}>
           <LoginButton/>
         </Link>
       </div>
