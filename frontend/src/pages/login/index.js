@@ -4,9 +4,10 @@ import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import NavigateBefore from '@material-ui/icons/NavigateBefore';
 import IconButton from '@material-ui/core/IconButton';
+import Email from '@material-ui/icons/Email';
+import Lock from '@material-ui/icons/Lock';
 
-import EmailForm from '../../components/EmailForm';
-import PasswordForm from '../../components/PasswordForm';
+import InformationForm from '../../components/InformationForm';
 
 const Login = () => {
     return (
@@ -19,12 +20,14 @@ const Login = () => {
 
             <p className={Styles.signInLabel}>Sign In</p>
             
-            <EmailForm/>
-            <PasswordForm/>
+            <form>
+                <InformationForm label="Email Address" icon={<Email/>}/>
+                <InformationForm label="Password" icon={<Lock/>}/>
 
-            <Box textAlign='center'>
-                <Button style={{width: 235, marginTop: 10}} variant="contained" color="primary">SIGN IN</Button>
-            </Box>
+                <Box textAlign='center'>
+                    <Button style={{width: 235, marginTop: 10}} variant="contained" color="primary">SIGN IN</Button>
+                </Box>
+            </form>
             
             <div className={Styles.separator}>
                 OR

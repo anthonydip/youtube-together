@@ -5,15 +5,6 @@
     text-align: center;
 }
 
-.emailForm {
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.signInBtn {
-    left: 50%;
-}
-
 .separator {
     display: flex;
     margin-top: 20px;

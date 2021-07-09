@@ -1,4 +1,5 @@
 require('dotenv').config();
+const mysql = require('mysql2');
 const express = require('express');
 const http = require('http');
 const { Server } = require("socket.io");
@@ -13,44 +14,63 @@ app.use(index);
 const server = http.createServer(app);
 const io = new Server(server);
 
-// MongoDB connection
-const mongoose = require('mongoose');
-mongoose.connect(process.env.DB_URL, {useNewUrlParser: true, useUnifiedTopology: true});
-
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-  console.log("Successfully connected to database!");
+// MySQL connection
+let connection = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_DATABASE,
 });
 
-// on socket connection
+// Connect to the MySQL server
+connection.connect(function(err) {
+  if (err) {
+    return console.error('error: ' + err.message);
+  }
+
+  let createUsers = `create table if not exists users(id int primary key auto_increment,
+                                                      email varchar(255) not null,
+                                                      username varchar(255) not null,
+                                                      password varchar(255) not null
+                    )`;
+
+  // Create the users table if does not exist
+  connection.query(createUsers, function(err, results, fields) {
+    if(err) {
+      console.log(err.message);
+    }
+  });
+
+  console.log("Connected to the MySQL server.");
+});
+
+// Socket IO Connection
 io.on("connection", (socket) => {
   console.log("New client connected");
 
-  // on video submitted from a socket
+  // On video submission from a socket
   socket.on("submit", (videoCode) => {
     console.log("video code: " + videoCode);
 
-    // emit the submitted video to everyone connected
+    // Emit submitted video to connected sockets
     io.emit("submit", videoCode);
   });
 
-  // on press play from a socket
+  // On play event from a socket
   socket.on("play", (msg) => {
     console.log(msg);
 
-    // emit the play event
     io.emit("play");
   });
 
-  // on press pause from a socket
+  // On pause event from a socket
   socket.on("pause", (msg) => {
     console.log(msg);
 
     io.emit("pause");
   });
 
-  // on skip from a socket
+  // On skip event from a socket
   socket.on("skip", (newValue, timeInVideo) => {
     console.log("thumb: " + newValue);
     console.log("timeinvideo: " + timeInVideo);
@@ -58,10 +78,13 @@ io.on("connection", (socket) => {
     io.emit("skip", newValue, timeInVideo);
   });
 
-  // on socket disconnect
+  // On socket disconnection
   socket.on("disconnect", () => {
     console.log("Client disconnected");
   });
+
+  // MySQL user sign up
+  
 });
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
