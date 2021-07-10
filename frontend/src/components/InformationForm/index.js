@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const InformationForm = ({label, icon, onChange}) => {
+const InformationForm = ({label, icon, type, onChange}) => {
     const classes = useStyles();
 
     return (
@@ -71,7 +71,7 @@ const InformationForm = ({label, icon, onChange}) => {
                     {label}
                 </InputLabel>
                 <BootstrapInput 
-                  id="bootstrap=input"
+                  type={type}
                   onChange={onChange}
                   startAdornment={
                     <InputAdornment className={classes.adornment} position="start">

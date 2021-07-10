@@ -13,6 +13,8 @@ import Email from '@material-ui/icons/Email';
 import Lock from '@material-ui/icons/Lock';
 import Modal from '@material-ui/core/Modal';
 
+import { socket } from '../../components/Socket/socket.js';
+
 import InformationForm from '../../components/InformationForm';
 
 function getModalStyle() {
@@ -37,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Signup = ({socket}) => {
+const Signup = () => {
     const classes = useStyles();
 
     const [email, setEmail] = useState("");
@@ -75,23 +77,31 @@ const Signup = ({socket}) => {
 
         // Check textfields are filled
         if(!email || !username || !password){
-            setMessage("No textfields can be empty");
+            setMessage("No textfields can be empty!");
             error = true;
         }
 
-        // Check if email or username already exists
+        // Validate email and user does not exist in database
+        socket.emit("check signup", email, username, (response) => {
+            if(response === "fail"){
+                error = true;
+                setMessage("Email or username already exists!");
+            }
+        });
 
-        // Open error modal
-        if(error){
-            handleOpen();
-        }
-        else{
-            console.log("SUBMITTING");
-            console.log(email);
-            console.log(username);
-            console.log(password);
+        // Wait for server response
+        setTimeout(() => {
+            // Open modal
+            if(error){
+                handleOpen();
+            }
+            else{
+                setMessage("Successfully created account!");
+                handleOpen();
 
-        }
+                socket.emit("signup", email, username, password);
+            }
+        }, 1000);
     }
 
     return(
@@ -104,9 +114,9 @@ const Signup = ({socket}) => {
 
             <p className={Styles.signUpLabel}>Create Account</p>
 
-            <InformationForm label="Email Address" icon={<Email/>} onChange={handleEmailChange}/>
-            <InformationForm label="Username" icon={<AccountCircle/>} onChange={handleUserChange}/>
-            <InformationForm label="Password" icon={<Lock/>} onChange={handlePassChange}/>
+            <InformationForm label="Email Address" icon={<Email/>} type="text" onChange={handleEmailChange}/>
+            <InformationForm label="Username" icon={<AccountCircle/>} type="text" onChange={handleUserChange}/>
+            <InformationForm label="Password" icon={<Lock/>} type="password" onChange={handlePassChange}/>
 
             <Box textAlign='center'>
                 <Button style={{width: 235, marginTop: 10}} onClick={handleSubmit} variant="contained" color="primary">CREATE ACCOUNT</Button>
@@ -119,7 +129,7 @@ const Signup = ({socket}) => {
                 aria-describedby="simple-modal-description"
             >
                 <div style={modalStyle} className={classes.paper}>
-                    <h2 id="simple-modal-title">Error creating account</h2>
+                    <h2 id="simple-modal-title">Create Account</h2>
                     <p id="simple-modal-description">
                         {message}
                     </p>

@@ -13,9 +13,7 @@ import VolumeBar from '../../components/VolumeBar';
 import LoginButton from '../../components/LoginButton';
 
 // socket io client
-import { io } from "socket.io-client";
-// change endpoint after pushing to heroku
-const ENDPOINT = "http://192.168.1.44:5000";
+import { socket } from '../../components/Socket/socket.js';
 
 // NOTE: TRY GET PLAY PAUSE BUTTON TO SWITCH ON CLICK
 
@@ -27,6 +25,7 @@ const ENDPOINT = "http://192.168.1.44:5000";
 // TO-DO:
 // add database for login
 //    - implement login for usernames
+//    - local storage to stay logged in?
 // add chat box on the right of video
 // add light/dark mode
 
@@ -35,9 +34,6 @@ var videoEvent = null;
 
 // Timer variable to update progress bar on set interval
 var timer;
-
-// set up socket io connection
-const socket = io(ENDPOINT, { transports : ['websocket'] });
 
 const Home = () => {
   const [playing, setPlaying] = useState(false);

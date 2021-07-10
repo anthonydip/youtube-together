@@ -46,7 +46,7 @@ connection.connect(function(err) {
 
 // Socket IO Connection
 io.on("connection", (socket) => {
-  console.log("New client connected");
+  console.log("New client connected with socket ID: " + socket.id);
 
   // On video submission from a socket
   socket.on("submit", (videoCode) => {
@@ -78,13 +78,47 @@ io.on("connection", (socket) => {
     io.emit("skip", newValue, timeInVideo);
   });
 
+  // MySQL validate unique user
+  socket.on("check signup", (email, username, fn) => {
+    let sql = `SELECT * FROM users WHERE (email = '${email}') OR (username = '${username}')`;
+
+    connection.query(sql, function(error, results, fields) {
+      console.log("TO SOCKET ID: " + socket.id);
+      if(error){
+        return console.error(error.message);
+      }
+
+      if(results.length === 0){
+        fn("pass");
+      }
+      else{
+        fn("fail");
+      }
+    });
+  });
+
+  // MySQL user sign up
+  socket.on("signup", (email, username, password) => {
+    console.log("Signed up with ID: " + socket.id);
+
+    // Insert user if does not exist
+    let sql = `INSERT INTO users(email, username, password)
+              VALUES('${email}','${username}','${password}')`;
+
+    connection.query(sql, function(error, results, fields) {
+      if(error) {
+        return console.error(error.message);
+      }
+        console.log("Added user");
+    });
+    
+  });
+
   // On socket disconnection
   socket.on("disconnect", () => {
     console.log("Client disconnected");
   });
 
-  // MySQL user sign up
-  
 });
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));

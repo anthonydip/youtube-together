@@ -21,8 +21,8 @@ const Login = () => {
             <p className={Styles.signInLabel}>Sign In</p>
             
             <form>
-                <InformationForm label="Email Address" icon={<Email/>}/>
-                <InformationForm label="Password" icon={<Lock/>}/>
+                <InformationForm label="Email Address" icon={<Email/>} type="text"/>
+                <InformationForm label="Password" icon={<Lock/>} type="text"/>
 
                 <Box textAlign='center'>
                     <Button style={{width: 235, marginTop: 10}} variant="contained" color="primary">SIGN IN</Button>
