@@ -1,7 +1,8 @@
 import Styles from './Styles.module.css';
 import YouTube from 'react-youtube';
-import { useState, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { UserContext } from '../../contexts/user/UserContext';
 
 // components
 import SearchForm from '../../components/SearchForm';
@@ -11,6 +12,7 @@ import PauseButton from '../../components/PauseButton';
 import VolumeButton from '../../components/VolumeButton';
 import VolumeBar from '../../components/VolumeBar';
 import LoginButton from '../../components/LoginButton';
+import ProfileButton from '../../components/ProfileButton';
 
 // socket io client
 import { socket } from '../../components/Socket/socket.js';
@@ -36,6 +38,7 @@ var videoEvent = null;
 var timer;
 
 const Home = () => {
+  const { user } = useContext(UserContext);
   const [playing, setPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   const [videoUrl, setVideoUrl] = useState('');
@@ -173,11 +176,20 @@ const Home = () => {
 
   return (
     <div>
-      <div className={Styles.loginBtn}>
-        <Link to="/login" style={{ textDecoration: 'none'}}>
-          <LoginButton/>
-        </Link>
-      </div>
+      { user.logged ? 
+      (
+        <div className={Styles.loginBtn}>
+          <ProfileButton username={user.username}/>
+        </div>
+      ) :
+      (
+        <div className={Styles.loginBtn}>
+          <Link to="/login" style={{ textDecoration: 'none'}}>
+            <LoginButton/>
+          </Link>
+        </div>
+      )}
+      
       
       <SearchForm socket={socket} videoUrl={videoUrl} setVideoUrl={setVideoUrl} setVideoCode={setVideoCode}/>
 

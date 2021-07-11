@@ -59,17 +59,14 @@ const Signup = () => {
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
-        console.log("email: " + email);
     }
 
     const handleUserChange = (event) => {
         setUsername(event.target.value);
-        console.log("user: " + username);
     }
 
     const handlePassChange = (event) => {
         setPassword(event.target.value);
-        console.log("pass: " + password);
     }
 
     const handleSubmit = () => {
@@ -101,7 +98,7 @@ const Signup = () => {
 
                 socket.emit("signup", email, username, password);
             }
-        }, 1000);
+        }, 750);
     }
 
     return(

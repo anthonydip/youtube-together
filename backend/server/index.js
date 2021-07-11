@@ -1,4 +1,5 @@
 require('dotenv').config();
+const bcrypt = require('bcrypt');
 const mysql = require('mysql2');
 const express = require('express');
 const http = require('http');
@@ -9,6 +10,9 @@ const index = require("./routes/index");
 
 const app = express();
 app.use(index);
+
+// bcrypt salt rounds 
+const saltRounds = 10;
 
 // Socket IO connection
 const server = http.createServer(app);
@@ -78,12 +82,11 @@ io.on("connection", (socket) => {
     io.emit("skip", newValue, timeInVideo);
   });
 
-  // MySQL validate unique user
+  // MySQL validate unique user sign up
   socket.on("check signup", (email, username, fn) => {
     let sql = `SELECT * FROM users WHERE (email = '${email}') OR (username = '${username}')`;
 
     connection.query(sql, function(error, results, fields) {
-      console.log("TO SOCKET ID: " + socket.id);
       if(error){
         return console.error(error.message);
       }
@@ -97,21 +100,76 @@ io.on("connection", (socket) => {
     });
   });
 
+  // MySQL validate user sign in
+  socket.on("check signin", (email, password, fn) => {
+    let sql = `SELECT password FROM users WHERE (email = '${email}')`;
+
+    // Load hash from password database
+    connection.query(sql, function(error, results, fields) {
+      if(error){
+        return console.error(error.message);
+      }
+
+      // Email does not exist
+      if(results.length === 0){
+        fn("not exist");
+      }
+      // Check password if email exists
+      else{
+        // Check hash and compare with bcrypt
+        bcrypt.compare(password, results[0].password, function(err, result) {
+          // Correct login
+          if(result){
+            fn("success");
+          }
+          // Incorrect login
+          else{
+            fn("fail");
+          }
+        });
+      }
+
+    });
+  });
+
+  // MySQL user sign in
+  socket.on("signin", (email, fn) => {
+    let sql = `SELECT id, email, username FROM users WHERE (email = '${email}')`;
+
+    // Load username from database
+    connection.query(sql, function(error, results, fields) {
+      if(error){
+        return console.error(error.message);
+      }
+
+      console.log(results[0]);
+
+      // Return username to socket
+      fn(results[0]);
+    });
+
+  })
+
   // MySQL user sign up
   socket.on("signup", (email, username, password) => {
     console.log("Signed up with ID: " + socket.id);
 
-    // Insert user if does not exist
-    let sql = `INSERT INTO users(email, username, password)
-              VALUES('${email}','${username}','${password}')`;
+    // Encrypt password using bcrypt
+    bcrypt.hash(password, saltRounds, function(err, hash) {
+  
+      // Insert user information with encrypted password into database
+      let sql = `INSERT INTO users(email, username, password)
+      VALUES('${email}','${username}','${hash}')`;
 
-    connection.query(sql, function(error, results, fields) {
+      // MySQL query
+      connection.query(sql, function(error, results, fields) {
       if(error) {
-        return console.error(error.message);
+      return console.error(error.message);
       }
-        console.log("Added user");
+      console.log("Added user");
+      });
+
     });
-    
   });
 
   // On socket disconnection
