@@ -17,20 +17,6 @@ import ProfileButton from '../../components/ProfileButton';
 // socket io client
 import { socket } from '../../components/Socket/socket.js';
 
-// NOTE: TRY GET PLAY PAUSE BUTTON TO SWITCH ON CLICK
-
-// WORKING ON:
-// implement server for multiple users to interact and watch together
-//    - load the same video for connected sockets
-//    - 
-
-// TO-DO:
-// add database for login
-//    - implement login for usernames
-//    - local storage to stay logged in?
-// add chat box on the right of video
-// add light/dark mode
-
 // Global variable to hold the event prop passed from the YouTube component when video is ready
 var videoEvent = null;
 
@@ -175,22 +161,7 @@ const Home = () => {
   });
 
   return (
-    <div>
-      { user.logged ? 
-      (
-        <div className={Styles.loginBtn}>
-          <ProfileButton username={user.username}/>
-        </div>
-      ) :
-      (
-        <div className={Styles.loginBtn}>
-          <Link to="/login" style={{ textDecoration: 'none'}}>
-            <LoginButton/>
-          </Link>
-        </div>
-      )}
-      
-      
+    <div>      
       <SearchForm socket={socket} videoUrl={videoUrl} setVideoUrl={setVideoUrl} setVideoCode={setVideoCode}/>
 
       <div className={Styles.player}>
